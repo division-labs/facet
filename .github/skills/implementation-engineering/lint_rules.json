@@ -1,0 +1,18 @@
+{
+  "typing": {
+    "required": true,
+    "numpy_typing": "Use numpy.typing.NDArray with dtype specified (e.g. NDArray[np.float64])",
+    "strict_optional": true,
+    "no_implicit_any": true
+  },
+  "documentation": {
+    "docstring_format": "Google style",
+    "equation_citation_required": true,
+    "example_citation": "Implements Eq. (3.12), Page 5 of <Source Title>"
+  },
+  "runtime_safety": {
+    "precondition_assertions": true,
+    "division_by_zero_guards": true,
+    "finite_checks": "np.isfinite on inputs and critical intermediates"
+  }
+}

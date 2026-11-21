@@ -1,0 +1,131 @@
+{
+  "concept_name": "Mandelbrot Set Realization",
+  "manifest_ref": "manifest.json",
+  "public_interface": {
+    "target_module": "mandelbrot.py",
+    "module_name": "mandelbrot",
+    "entrypoints": [
+      {
+        "name": "mandelbrot_escape",
+        "parameters": [
+          {
+            "name": "c",
+            "type": "complex"
+          },
+          {
+            "name": "max_iter",
+            "type": "int"
+          }
+        ],
+        "return_type": "tuple[bool, int]"
+      }
+    ]
+  },
+  "type_mappings": [
+    {
+      "symbol": "c",
+      "computational_type": "complex",
+      "domain_check": "isinstance(c, complex)",
+      "precision": "float64"
+    },
+    {
+      "symbol": "z_n",
+      "computational_type": "complex",
+      "domain_check": "isinstance(z_n, complex)",
+      "precision": "float64"
+    },
+    {
+      "symbol": "max_iter",
+      "computational_type": "int",
+      "domain_check": "isinstance(max_iter, int) and max_iter >= 1",
+      "precision": "standard_integer"
+    }
+  ],
+  "operation_mappings": [
+    {
+      "operation": "z_{n+1} = z_n^2 + c",
+      "math_operation": "Complex_Iteration",
+      "code_construct": "z = z * z + c",
+      "notes": "Core quadratic polynomial recurrence."
+    },
+    {
+      "operation": "|z_n| > 2.0",
+      "math_operation": "Escape_Radius_Test",
+      "code_construct": "abs(z) > 2.0",
+      "notes": "Escape test indicating divergence to infinity."
+    }
+  ],
+  "precondition_assertions": [
+    "assert isinstance(c, complex), \"c must be complex\"",
+    "assert isinstance(max_iter, int) and max_iter >= 1, \"max_iter must be positive integer\""
+  ],
+  "anchor_test_cases": [
+    {
+      "input": {
+        "c": "0j",
+        "max_iter": 100
+      },
+      "expected": [
+        true,
+        100
+      ],
+      "rationale": "Origin is the centre of the main cardioid and never escapes."
+    },
+    {
+      "input": {
+        "c": "2+2j",
+        "max_iter": 100
+      },
+      "expected": [
+        false,
+        1
+      ],
+      "rationale": "|c| > 2 escapes immediately on iteration 1."
+    }
+  ],
+  "verification_obligations": [
+    {
+      "id": "OBL-1",
+      "source_spec_id": "SPEC-1",
+      "predicate_type": "anchor",
+      "formal_property": "mandelbrot_escape(0j, 100) == (True, 100)",
+      "description": "Origin critical point c=0 remains bounded for all iteration limits.",
+      "tolerance": "exact"
+    },
+    {
+      "id": "OBL-2",
+      "source_spec_id": "SPEC-2",
+      "predicate_type": "relational_law",
+      "formal_property": "mandelbrot_escape(c.conjugate(), max_iter) == mandelbrot_escape(c, max_iter)",
+      "description": "Metamorphic reflection symmetry across the real axis.",
+      "tolerance": "exact"
+    },
+    {
+      "id": "OBL-3",
+      "source_spec_id": "SPEC-2",
+      "predicate_type": "postcondition",
+      "formal_property": "abs(c) > 2.0 implies not mandelbrot_escape(c, max_iter)[0]",
+      "description": "Any complex coordinate with norm exceeding 2 is guaranteed to escape.",
+      "tolerance": "exact"
+    }
+  ],
+  "algorithm_pseudocode": [
+    "def mandelbrot_escape(c: complex, max_iter: int = 1000) -> tuple[bool, int]:",
+    "    z = 0j",
+    "    for n in range(1, max_iter + 1):",
+    "        z = z * z + c",
+    "        if abs(z) > 2.0:",
+    "            return False, n",
+    "    return True, max_iter"
+  ],
+  "assumptions": [
+    "IEEE-754 standard double-precision complex arithmetic."
+  ],
+  "suggested_packages": [
+    "numpy",
+    "scipy",
+    "sympy",
+    "hypothesis",
+    "pytest"
+  ]
+}

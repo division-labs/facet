@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "description": "Curated registry of approved research domains auto-authorized for web_fetch during grounding.",
+  "sources": [
+    {
+      "domain": "arxiv.org",
+      "label": "arXiv Preprint Repository",
+      "fetch_hint": "https://export.arxiv.org/api/query?search_query=all:<terms>&max_results=5"
+    },
+    {
+      "domain": "wikipedia.org",
+      "label": "Wikipedia Technical & Mathematical Articles",
+      "fetch_hint": "https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&rvslots=main&redirects=1&formatversion=2&format=json&titles=<Topic>"
+    },
+    {
+      "domain": "dlmf.nist.gov",
+      "label": "NIST Digital Library of Mathematical Functions"
+    },
+    {
+      "domain": "nist.gov",
+      "label": "National Institute of Standards and Technology Specifications"
+    },
+    {
+      "domain": "rfc-editor.org",
+      "label": "IETF RFC Editor",
+      "fetch_hint": "https://www.rfc-editor.org/rfc/rfc<number>.txt"
+    },
+    {
+      "domain": "ietf.org",
+      "label": "Internet Engineering Task Force Specifications"
+    },
+    {
+      "domain": "openreview.net",
+      "label": "OpenReview Peer-Reviewed Machine Learning Venue"
+    },
+    {
+      "domain": "doi.org",
+      "label": "Digital Object Identifier Resolution"
+    },
+    {
+      "domain": "acm.org",
+      "label": "ACM Digital Library"
+    },
+    {
+      "domain": "ieee.org",
+      "label": "IEEE Xplore Specifications & Standards"
+    },
+    {
+      "domain": "python.org",
+      "label": "Python Standard Library & PEP Specifications"
+    },
+    {
+      "domain": "numpy.org",
+      "label": "NumPy Reference Documentation"
+    },
+    {
+      "domain": "scipy.org",
+      "label": "SciPy Reference Documentation"
+    },
+    {
+      "domain": "sympy.org",
+      "label": "SymPy Symbolic Mathematics Documentation"
+    },
+    {
+      "domain": "pytorch.org",
+      "label": "PyTorch Reference Documentation"
+    }
+  ]
+}

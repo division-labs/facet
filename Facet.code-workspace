@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"chat.requestQueuing.defaultAction": "queue",
+		"chat.math.enabled": true
+	}
+}

@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MappingDocument",
+  "type": "object",
+  "required": [
+    "concept_name",
+    "manifest_ref",
+    "public_interface",
+    "verification_obligations",
+    "type_mappings",
+    "precondition_assertions"
+  ],
+  "properties": {
+    "concept_name": { "type": "string" },
+    "manifest_ref": { "type": "string", "description": "Reference or path to the Specification Manifest (manifest.json)" },
+    "public_interface": {
+      "type": "object",
+      "description": "Language-neutral public API contract enabling clean-room auditing before code inspection",
+      "required": ["entrypoints"],
+      "anyOf": [
+        { "required": ["target_module"] },
+        { "required": ["module_name"] }
+      ],
+      "properties": {
+        "target_module": { "type": "string", "description": "Target module or source file name, e.g. 'mandelbrot_iteration.py'" },
+        "module_name": { "type": "string", "description": "Alias for target_module, e.g. 'mandelbrot_iteration.py'" },
+        "entrypoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "parameters", "return_type"],
+            "properties": {
+              "name": { "type": "string", "description": "Callable function or class entrypoint name" },
+              "parameters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "type"],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Parameter name; prefix variadic positional/keyword parameters with '*' or '**' (e.g. '*args', '**kwargs')"
+                    },
+                    "type": { "type": "string" },
+                    "kind": {
+                      "type": "string",
+                      "enum": ["positional_or_keyword", "var_positional", "keyword_only", "var_keyword"]
+                    },
+                    "description": { "type": "string" }
+                  }
+                }
+              },
+              "return_type": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "verification_obligations": {
+      "type": "array",
+      "description": "Traceable verification obligations derived from SPEC-k manifest claims, drawn from Hughes's 4-predicate basis",
+      "items": {
+        "type": "object",
+        "required": ["predicate_type", "description"],
+        "allOf": [
+          {
+            "anyOf": [
+              { "required": ["obligation_id"] },
+              { "required": ["id"] }
+            ]
+          },
+          {
+            "anyOf": [
+              { "required": ["spec_id"] },
+              { "required": ["source_spec_id"] }
+            ]
+          }
+        ],
+        "properties": {
+          "obligation_id": { "type": "string", "description": "Unique obligation ID, e.g., 'OBL-1', 'OBL-2'" },
+          "id": { "type": "string", "description": "Alias for obligation_id, e.g., 'OBL-1'" },
+          "spec_id": { "type": "string", "description": "Traceability link to manifest specification claim, e.g., 'SPEC-1' or equation identifier" },
+          "source_spec_id": { "type": "string", "description": "Alias for spec_id traceability link, e.g., 'SPEC-1'" },
+          "predicate_type": {
+            "type": "string",
+            "enum": ["anchor", "reference_model", "relational_law", "postcondition"],
+            "description": "'anchor' (pinned test vectors/boundary values), 'reference_model' (naive pseudo-oracle comparison), 'relational_law' (metamorphic/algebraic invariants), 'postcondition' (universal bounds and error checks)"
+          },
+          "description": { "type": "string" },
+          "formal_predicate": { "type": "string", "description": "Relational expression or logic property, e.g., 'abs(z_next) > 2.0 ==> escaped'" },
+          "formal_property": { "type": "string", "description": "Alias for formal_predicate" },
+          "tolerance": { "description": "Optional per-obligation tolerance specification (e.g. 'exact' or numeric rtol)" },
+          "oracle_type": {
+            "type": "string",
+            "enum": ["exact_value", "closed_form_expr", "conformance_vector", "error_rejection", "differential_reference", "metamorphic_relation", "invariant_check"],
+            "default": "closed_form_expr"
+          },
+          "inputs": { "description": "Concrete sample inputs or strategy parameters" },
+          "input": { "description": "Alias for inputs" },
+          "expected": { "description": "Exact expected value, closed-form expression, or invariant condition" }
+        }
+      }
+    },
+    "anchor_test_cases": {
+      "type": "array",
+      "description": "Fast smoke test vectors for Stage 3 implementer smoke-testing",
+      "items": {
+        "type": "object",
+        "required": ["expected"],
+        "anyOf": [
+          { "required": ["inputs"] },
+          { "required": ["input"] }
+        ],
+        "properties": {
+          "name": { "type": "string" },
+          "inputs": { "type": "object" },
+          "input": { "type": "object", "description": "Alias for inputs" },
+          "expected": { "description": "Expected closed-form value or error expectation" },
+          "rationale": { "type": "string" },
+          "oracle_type": { "type": "string", "default": "closed_form_expr" }
+        }
+      }
+    },
+    "type_mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["computational_type", "domain_check"],
+        "anyOf": [
+          { "required": ["symbol"] },
+          { "required": ["math_symbol"] }
+        ],
+        "properties": {
+          "symbol": { "type": "string", "description": "Theoretical symbol, parameter, or state variable identifier" },
+          "math_symbol": { "type": "string", "description": "Mathematical symbol alias" },
+          "computational_type": { "type": "string", "description": "e.g., 'float', 'NDArray[np.float64]', 'int', 'Tensor'" },
+          "domain_check": { "type": "string", "description": "Python check, e.g., 'x > 0', 'A.ndim == 2'" },
+          "precision": { "type": "string", "description": "e.g., 'IEEE 754 64-bit'" },
+          "unit": { "type": "string", "description": "Optional SI or dimensional unit tag matching manifest.json variables[*].unit" }
+        }
+      }
+    },
+    "operation_mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code_construct"],
+        "anyOf": [
+          { "required": ["operation"] },
+          { "required": ["math_operation"] }
+        ],
+        "properties": {
+          "spec_id": { "type": "string", "description": "Optional traceability link to SPEC-k claim in manifest.json" },
+          "operation": { "type": "string", "description": "Theoretical operation, formula, or algorithmic rule (e.g., 'Summation \\sum_{i=1}^n x_i', 'State Transition')" },
+          "math_operation": { "type": "string", "description": "Mathematical operation alias" },
+          "code_construct": { "type": "string", "description": "e.g., 'np.sum(x)' or 'for loop accumulation'" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "precondition_assertions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Executable Python assertion statements for function preconditions"
+    },
+    "algorithm_pseudocode": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Step-by-step computational instructions"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit assumptions regarding conditioning, singularity, or domain limits"
+    },
+    "suggested_packages": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional suggested runtime/scientific packages for @Engineer to pin in requirements.txt"
+    },
+    "upstream_modules": {
+      "type": "array",
+      "description": "Optional seal-verified upstream specs/<spec_slug>/ packages imported as read-only Cleanroom dependencies",
+      "items": {
+        "type": "object",
+        "required": ["spec_slug", "module"],
+        "properties": {
+          "spec_slug": { "type": "string", "description": "Directory slug under specs/ containing a sealed PROVENANCE.json" },
+          "module": { "type": "string", "description": "Verified Python module filename inside specs/<spec_slug>/" },
+          "imported_symbols": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Optional list of functions or classes imported from the upstream module"
+          }
+        }
+      }
+    }
+  }
+}

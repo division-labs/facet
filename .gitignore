@@ -1,0 +1,43 @@
+# Virtual Environments
+.venv/
+venv/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS Artifacts
+.DS_Store
+Thumbs.db
+
+# Dynamic Pipeline State & Ephemeral Scratch
+.pipeline_state.json
+.pipeline_scratch/
+.pipeline_errors.log
+.pipeline_state.json.tmp
+.pipeline_config.json.tmp
+.rollback_*
+ocr_staging/
+specs/*_interrupted*/
+*.lock
+AUDIT_FEEDBACK.json
+.hypothesis/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+ab_test_facet_cmds
+docs/svg/
+benchmarks/runs/
+benchmarks/.cache/
+
+ROADMAP.md
+rrsi_facet_synergies.md
+decision_model_synergies.md

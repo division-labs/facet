@@ -1,0 +1,18 @@
+# Changelog
+
+All notable changes to **Facet** are documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+---
+
+## [v.Preview] - 2026-11-20
+
+### Added
+- **Transient Cryptographic Hypervisor (`@Facet`) & Split-Plane Reference Monitor:** User-visible `@Facet` agent confined strictly to read-only seal inspection (`view`) and synchronous `@Orchestrator` dispatch (`task`), backed by [pipeline_guards.py](.github/hooks/scripts/pipeline_guards.py) across 12 Copilot lifecycle hook events and 22 CLI actions with out-of-workspace Shadow Seal Ledger tamper detection, `/approve`, `/status`, `/reset`, and `/add-source` commands, read-only Checkpoint Q&A, and Cycle-2 `specs/<concept_slug>/` chaining.
+- **Unified Local Gemma 4 + Boundary System-1 Model Stack (`OLLAMA_MAX_LOADED_MODELS=1`):** Role-matched allocation pairing `gemma4:26b-a4b-it-q8_0` (MoE, 3.8B active / 25.2B total across `@Researcher`, `@Formalist`, `@Engineer`, and `@Auditor` with zero `S1..S4` swap), shared `gemma4:e4b` (`@Facet`, `@Orchestrator`, and `@Scribe` `~150M` Vision Encoder), and boundary-only `pplx-decider-flash` (`/v1/systemone`, `"keep_alive": 0`) compiled via [build_modelfiles.sh](modelfiles/build_modelfiles.sh) with 128K context and `"stop": []`.
+- **Stage 0V Multimodal OCR & 3-Tier TEI P5 Epistemic Provenance:** [prepare_visual_sources.py](.github/skills/technical-perception/scripts/prepare_visual_sources.py) rasterizes PDFs at `180 DPI` and stages figures behind a strict Vision/PDF Modality Firewall, propagating `<uncertain>` and `<illegible/>` tags deterministically into `manifest.json` `ambiguities` and `"epistemic_status": "assumption"`.
+- **Deterministic `AST-1..AST-4` Gates, Artifact-Preserving Scoped Patching & `Method L3` Edit Scoping:** Enforces `formal_predicate` Python `eval` AST compilation and $O(N^3)$ precondition bans (`AST-1`), lexical-scope unbound-symbol checks (`AST-2`), symmetric rational-pole guards (`AST-3`), and cross-stage module/parameter/entrypoint call parity (`AST-4`), paired with 4-stage `resolve_edit_pair()` auto-snapping, [code_patch.py](.github/skills/implementation-engineering/scripts/code_patch.py) (`inspect`, `replace-symbol`, `replace-lines`, `replace-json`), and `Method L3` (`Line-ID Choice` + AST/JSON hunk mass pooling + Companion `Noul`) advisory `<edit_scope_hint>` windows.
+- **Cleanroom Hughes 4-Predicate Verification & Target-Aware Spec Rewinds:** Structural Cleanroom separation between `@Engineer` and `@Auditor` across `anchor`, `reference_model`, `relational_law`, and Hypothesis `postcondition` obligations, with artifact-preserving target-aware rewinds (`IMPLEMENTATION_DEFECT` -> S3, `MAPPING_DEFECT` -> S2, `MANIFEST_DEFECT` -> S1) and Stage 5 `PROVENANCE.json` archival.
+- **Workspace-Scoped `Facet Lens` Copilot Canvas:** Zero-token loopback HTTP + SSE visual companion ([extension.mjs](.github/extensions/facet-lens/extension.mjs)) rendering interactive `SPEC -> FN -> OBL` traceability graphs, optical source plates + KaTeX equations, 4-predicate proof matrices, counterexample inspectors, and sealed `specs/*` archives.
+- **Validation Suite, Optional 768D Semantic Archive Recall & `SciCode` Benchmark Harness:** 5-pathway validation runner ([validate_system.py](scripts/validate_system.py)), optional SQLite vector indexing via `embeddinggemma-2:740m-mxfp8` ([post_archive_embed.py](templates/extensions/post_archive_embed.py)), user-scope installer ([install_user_level.py](scripts/install_user_level.py)), and canonical 3-arm `scicode-bench/SciCode` evaluation harness ([run_benchmark.py](benchmarks/run_benchmark.py)).

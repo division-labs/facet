@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace session-start",
+        "timeoutSec": 5
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace pre-tool",
+        "timeoutSec": 15
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "type": "command",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace post-failure",
+        "timeoutSec": 5
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "matcher": "edit|create|str_replace_editor|apply_patch|web_fetch|web_search|bash|powershell|execute",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace validate-edit",
+        "timeoutSec": 10
+      }
+    ],
+    "preCompact": [
+      {
+        "type": "command",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace pre-compact",
+        "timeoutSec": 5
+      }
+    ],
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace user-prompt",
+        "timeoutSec": 5
+      }
+    ],
+    "userPromptTransformed": [
+      {
+        "type": "command",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace user-prompt-transformed",
+        "timeoutSec": 5
+      }
+    ],
+    "subagentStart": [
+      {
+        "type": "command",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace subagent-start",
+        "timeoutSec": 5
+      }
+    ],
+    "subagentStop": [
+      {
+        "type": "command",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace subagent-stop",
+        "timeoutSec": 5
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace session-end",
+        "timeoutSec": 5
+      }
+    ],
+    "errorOccurred": [
+      {
+        "type": "command",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace error-occurred",
+        "timeoutSec": 5
+      }
+    ],
+    "permissionRequest": [
+      {
+        "type": "command",
+        "matcher": "read|view|grep|glob|search|todo|runTests|web_fetch|bash|powershell",
+        "command": "python3 .github/hooks/scripts/pipeline_guards.py --scope workspace permission-request",
+        "timeoutSec": 5
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+FROM gemma4:e4b
+
+# Context Window: 128K (131,072 tokens) for technical artifacts and task states
+PARAMETER num_ctx 131072
+
+# Low temperature for deterministic tool calling and high-precision Vision OCR (T=0.1, top_p=0.95, top_k=64)
+PARAMETER temperature 0.1
+PARAMETER top_p 0.95
+PARAMETER top_k 64
+
+# Speculative drafting: draft_num_predict is documented; this model (e4b) ships an embedded drafter, with no measurable speed effect on JSON output (zero custom stop overrides; native PARSER gemma4 owns delimiters)
+PARAMETER draft_num_predict 4
+
+# Shared Neutral Low-Latency E4B System Anchor (role specifics supplied by active .agent.md)
+SYSTEM """
+# Role: Low-Variance Technical Coordinator & Multimodal Specialist
+Operate strictly within the active persona instructions and declared tools of the current conversation.
+
+## Behavioral Anchors
+- Think briefly and at low depth; never draft full tool calls or documents in internal reasoning.
+- Invoke structured native tool calls directly (passing "path" first as an absolute path); never emit pseudo-tool XML tags or decorative emojis.
+- Preserve existing files on disk: create new deliverables once via create, and apply revisions via scoped edit.
+- Never confabulate illegible glyphs in visual plates (use <uncertain> / <illegible/> tags only for degraded notation), halt cleanly at human checkpoints, and evaluate outcomes objectively as SUCCESS, CONDITIONAL_PASS, or FAILED.
+"""

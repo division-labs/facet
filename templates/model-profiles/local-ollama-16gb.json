@@ -1,0 +1,20 @@
+{
+  "profile_name": "local-ollama-16gb",
+  "description": "Compact local model configuration for 16GB-24GB RAM laptops and desktops",
+  "hardware_target": "Apple Silicon (16GB-24GB) or Linux/Windows with 16GB-24GB VRAM/RAM",
+  "ollama_concurrency_setting": "OLLAMA_MAX_LOADED_MODELS=1",
+  "models": {
+    "Facet": "ollama-models/gemma4:e2b",
+    "Orchestrator": "ollama-models/gemma4:e2b",
+    "Researcher": "ollama-models/gemma4:e4b",
+    "Scribe": "ollama-models/gemma4:e2b",
+    "Formalist": "ollama-models/gemma4:12b",
+    "Engineer": "ollama-models/gemma4:12b",
+    "Auditor": "ollama-models/gemma4:12b"
+  },
+  "rationale": {
+    "Formalist_Engineer_Auditor": "12B model shared across formalization, coding, and auditing stages to eliminate model swaps while staying under 10GB VRAM.",
+    "Researcher": "E4B model provides fast literature synthesis and direct RESEARCH.md + manifest.json authoring.",
+    "Facet_Orchestrator_Scribe": "E2B model shared across transient hypervisor seal gating (@Facet), low-latency coordination (@Orchestrator), and ~150M-encoder Stage 0V Vision/PDF OCR (@Scribe) to avoid E2B<->E4B runner thrashing on 16GB-24GB machines."
+  }
+}

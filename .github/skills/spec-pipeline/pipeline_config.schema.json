@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PipelineConfig",
+  "type": "object",
+  "properties": {
+    "governance_mode": {
+      "type": "string",
+      "enum": ["strict-4-gate", "streamlined-2-gate", "autonomous-batch"],
+      "default": "strict-4-gate",
+      "description": "Checkpoint gatekeeper governance level: strict-4-gate (C0, C1, C2, C3), streamlined-2-gate (C1, C3), or autonomous-batch"
+    },
+    "max_repair_attempts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "default": 3,
+      "description": "Maximum Reflexion repair iterations between @Engineer and @Auditor before human checkpoint escalation"
+    },
+    "toolchain": {
+      "type": "object",
+      "description": "Python verification test discovery and static validation configuration",
+      "properties": {
+        "verification_globs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["verify_*.py", "test_*.py", "LOCAL_CRITIC.json", "AUDIT_FEEDBACK.json", "VERIFICATION.md"]
+        },
+        "static_validator": {
+          "type": "string",
+          "enum": ["py_compile", "none"],
+          "default": "py_compile"
+        }
+      }
+    },
+    "scratch_retention": {
+      "type": "string",
+      "enum": ["consume-once", "archive-trace"],
+      "default": "consume-once",
+      "description": "Lifecycle of .pipeline_scratch/ transient staging: consume-once cleans rollback/OCR staging immediately; archive-trace additionally persists per-agent reasoning traces (*_trace.md) into specs/<slug>/scratch_traces/"
+    },
+    "approved_research_domains": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Additional workspace-approved domains auto-authorized for web_fetch research alongside approved_sources.json"
+    },
+    "allow_web_research": {
+      "type": "boolean",
+      "default": true,
+      "description": "When false, disables web_fetch so @Researcher extracts equations, constraints, and target_interface strictly from the user prompt, SOURCE_OCR.md, and research/ files (closed-book / benchmark mode)"
+    },
+    "enable_local_spec_critic": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["system1_s1_s2", "off", "s2_only", "s1_and_s2"]
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "default": "system1_s1_s2",
+      "description": "Local semantic specification screening mode after manifest.json and mapping.json: 'system1_s1_s2' (default, <1 s boundary pplx-decider-flash screen with automatic 'off' fallback), 'off' (AST-1..4 + Stage 4 Cleanroom @Auditor only), 's2_only', or 's1_and_s2' (boolean true maps to 's1_and_s2', false maps to 'off')"
+    },
+    "decision_model": {
+      "type": "object",
+      "description": "Boundary-only System-1 decision model (/v1/systemone, keep_alive=0 under OLLAMA_MAX_LOADED_MODELS=1) for semantic spec screening, Stage 4 rewind triage override, and Method L3 edit line-scope localization",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "model": {
+          "type": "string",
+          "default": "pplx-decider-flash"
+        },
+        "confidence_threshold": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 0.99,
+          "default": 0.85
+        },
+        "keep_alive": {
+          "oneOf": [{ "type": "integer" }, { "type": "string" }],
+          "default": 0
+        },
+        "timeout_sec": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60,
+          "default": 15
+        }
+      }
+    },
+    "enable_post_archive_embed": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, Stage 5 archival triggers templates/extensions/post_archive_embed.py (or post_archive_embed.py) out-of-band to index archived artifacts via Ollama /api/embed"
+    },
+    "upstream_seals": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Optional workspace-relative paths to upstream PROVENANCE.json cryptographic seal files (e.g. specs/<upstream_slug>/PROVENANCE.json) that @Facet and hypervisor-guard must verify before launching @Orchestrator"
+    }
+  }
+}
