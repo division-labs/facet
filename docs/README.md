@@ -23,6 +23,7 @@ Facet follows the [Diataxis](https://diataxis.fr/) documentation framework, sepa
 - Changelog: [CHANGELOG.md](../CHANGELOG.md)
 - Session, 1:1 Context-Audit, Validation & Runner Scripts: [scripts/README.md](../scripts/README.md) ([validate_system.py](../scripts/validate_system.py), [analyze_trace.py](../scripts/analyze_trace.py), and [copilot_sdk_runner.mjs](../scripts/copilot_sdk_runner.mjs))
 - Benchmark Suite (`SciCode` Canonical Harness): [benchmarks/README.md](../benchmarks/README.md)
+- `.github/` Subdirectory Guides: [agents/README.md](../.github/agents/README.md), [skills/README.md](../.github/skills/README.md), [hooks/README.md](../.github/hooks/README.md), [extensions/README.md](../.github/extensions/README.md), and [ISSUE_TEMPLATE/README.md](../.github/ISSUE_TEMPLATE/README.md)
 - Workspace Canvas Extension (`Facet Lens`): [extension.mjs](../.github/extensions/facet-lens/extension.mjs)
 - Reference Examples: [examples/README.md](../examples/README.md) ([magical_mystery/](../examples/magical_mystery/), [constant_q_transform/](../examples/constant_q_transform/README.md), and [mandelbrot_set/](../examples/mandelbrot_set/README.md))
 - Specification Archive Directory: [specs/README.md](../specs/README.md)

@@ -132,13 +132,19 @@ def sync_agents(
             print(f"  [Installed] {agent_file.name} -> {target}")
 
 
-def sync_directory(src_dir: Path, dst_dir: Path, dry_run: bool = False) -> None:
+def sync_directory(
+    src_dir: Path,
+    dst_dir: Path,
+    dry_run: bool = False,
+    subdirs_only: bool = False,
+) -> None:
     """Recursively synchronize files and subdirectories into ``dst_dir``.
 
     Args:
         src_dir: Source directory to copy from.
         dst_dir: Destination directory to create/update.
         dry_run: When ``True``, print planned copy actions without mutating disk.
+        subdirs_only: When ``True``, copy only child directories and skip top-level files.
     """
     if not src_dir.exists():
         return
@@ -153,7 +159,7 @@ def sync_directory(src_dir: Path, dst_dir: Path, dry_run: bool = False) -> None:
             else:
                 shutil.copytree(item, target, dirs_exist_ok=True)
                 print(f"  [Installed Dir] {item.name}/ -> {target}/")
-        elif item.is_file():
+        elif item.is_file() and not subdirs_only:
             if dry_run:
                 print(f"  [Dry-Run] Would copy {item.name} -> {target}")
             else:
@@ -188,7 +194,7 @@ def main() -> None:
 
     # 2. Sync Skills.
     print("\n2. Installing Agent Skills...")
-    sync_directory(REPO_ROOT / ".github" / "skills", user_copilot_dir / "skills", dry_run=args.dry_run)
+    sync_directory(REPO_ROOT / ".github" / "skills", user_copilot_dir / "skills", dry_run=args.dry_run, subdirs_only=True)
     if not args.dry_run:
         # Ensure every helper script installed under `~/.copilot/skills/*/scripts/` is executable.
         for script_py in (user_copilot_dir / "skills").glob("*/scripts/*.py"):

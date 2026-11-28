@@ -882,12 +882,28 @@ def validate_static_and_packaging_contracts() -> None:
     print("  [PASS] Templates, presets, install_user_level.py, & build_modelfiles.sh (3-tag/6-tag/stop-guards) verified")
 
     # --- Phase 4: Docs Links, Facet Lens Sidecar, Acyclic DAG & Comment Anti-Drift Gates ---
+    # Enforce that every top-level subfolder in `.github/` contains a descriptive `README.md`
+    # (and that `.github/ISSUE_TEMPLATE/README.md` omits YAML frontmatter so GitHub excludes it from the Issue Chooser).
+    github_top_subdirs = sorted(
+        p for p in (WORKSPACE_ROOT / ".github").iterdir() if p.is_dir() and not p.name.startswith(".")
+    )
+    assert {p.name for p in github_top_subdirs} >= {"ISSUE_TEMPLATE", "agents", "extensions", "hooks", "skills"}
+    for gh_sub in github_top_subdirs:
+        gh_readme = gh_sub / "README.md"
+        assert gh_readme.is_file() and gh_readme.read_text(encoding="utf-8").strip(), (
+            f"Missing or empty README.md in top-level .github subfolder: {gh_sub}"
+        )
+    assert not (WORKSPACE_ROOT / ".github" / "ISSUE_TEMPLATE" / "README.md").read_text(encoding="utf-8").lstrip().startswith("---"), (
+        ".github/ISSUE_TEMPLATE/README.md must not start with YAML frontmatter (prevents GitHub Issue Chooser listing)"
+    )
+
     link_re = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
     for doc_rel in [
         "README.md", "ROADMAP.md", "CHANGELOG.md", "scripts/README.md", "benchmarks/README.md",
         "docs/README.md", "docs/installation.md", "docs/usage-and-workflow.md",
         "docs/customization.md", "docs/architecture.md", "docs/empirical-engineering.md",
         "docs/reference/schemas-and-contracts.md", "docs/reference/hooks-and-guards.md",
+        *[f".github/{p.name}/README.md" for p in github_top_subdirs],
     ]:
         doc_p = WORKSPACE_ROOT / doc_rel
         assert doc_p.is_file(), f"Missing doc: {doc_p}"
