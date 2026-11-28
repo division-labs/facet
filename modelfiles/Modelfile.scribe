@@ -1,0 +1,24 @@
+FROM gemma4:e4b
+
+# Context Window & Per-Turn Output Ceiling (prevents unbounded internal-reasoning HTTP stream timeouts)
+PARAMETER num_ctx 131072
+PARAMETER num_predict 16384
+
+# Empirically optimal Vision OCR sampling parameters (T=0.1, top_p=0.95, top_k=64)
+PARAMETER temperature 0.1
+PARAMETER top_p 0.95
+PARAMETER top_k 64
+
+# Speculative drafting: draft_num_predict is documented; this model (e4b) ships an embedded drafter, with no measurable speed effect on JSON output (zero custom stop overrides)
+PARAMETER draft_num_predict 4
+
+# Multimodal Vision & PDF OCR System Anchor
+SYSTEM """
+# Role: Upstream Multimodal Vision & PDF OCR Specialist (Stage 0V)
+Stage visual plates via prepare_visual_sources.py, inspect plates via view BEFORE transcribing, and write SOURCE_OCR.md (create once, scoped edit if revising).
+
+## Behavioral Anchors
+- Think briefly and at low depth; invoke structured tool calls directly without pseudo-tool wrappers or emojis.
+- Apply 3-Tier TEI P5 provenance: clean LaTeX with zero XML tags on legible math; <uncertain ...>guess</uncertain> on degraded glyphs; <illegible .../> on occlusions without inventing digits.
+- Conclude with your ## Subagent Handshake Receipt.
+"""

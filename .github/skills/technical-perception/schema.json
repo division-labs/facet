@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SpecificationManifest",
+  "type": "object",
+  "required": [
+    "concept_name",
+    "source_reference",
+    "formal_specifications",
+    "variables",
+    "constraints",
+    "verification_contract"
+  ],
+  "properties": {
+    "concept_name": {
+      "type": "string",
+      "description": "Canonical name of the quantitative model, algorithm, mathematical theory, or technical specification"
+    },
+    "domain_category": {
+      "type": "string",
+      "description": "Domain category, e.g. 'Pure Mathematics', 'Quantitative Finance', 'Computational Physics', 'Signal Processing', 'Machine Learning Theory', 'Cryptographic Protocol'",
+      "default": "Applied Mathematics & Technical Computing"
+    },
+    "source_reference": {
+      "type": "object",
+      "required": ["title", "doi_or_url"],
+      "properties": {
+        "title": { "type": "string", "description": "Title of paper, book, RFC, or specification" },
+        "doi_or_url": { "type": "string", "description": "Canonical DOI, arXiv link, RFC URL, official repository link, or 'prompt://user_request' / 'local://<path>' when grounded in a self-contained prompt or closed-book specification" },
+        "authors": { "type": "array", "items": { "type": "string" } },
+        "year": { "type": "integer" },
+        "pages": { "type": "string" },
+        "sections": { "type": "string" }
+      }
+    },
+    "target_interface": {
+      "type": "object",
+      "description": "Optional caller-mandated module, entrypoint signatures (including variadic *args/**kwargs), and import constraints extracted verbatim from the user prompt or local specification.",
+      "properties": {
+        "target_module": { "type": "string", "description": "Caller-specified target module filename, e.g. 'solver.py'" },
+        "allowed_imports": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional caller-restricted import lines or top-level module names"
+        },
+        "entrypoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string", "description": "Exact callable function or class name required by the caller" },
+              "signature": { "type": "string", "description": "Verbatim Python def/class header if specified, e.g. 'def solve(x, y):'" },
+              "parameters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name"],
+                  "properties": {
+                    "name": { "type": "string", "description": "Exact parameter name, prefixing variadic parameters with '*' or '**' (e.g. '*args', '**kwargs')" },
+                    "kind": {
+                      "type": "string",
+                      "enum": ["positional_or_keyword", "var_positional", "keyword_only", "var_keyword"]
+                    },
+                    "description": { "type": "string" }
+                  }
+                }
+              },
+              "return_description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "formal_specifications": {
+      "type": "array",
+      "description": "Polymorphic formal theoretical, mathematical, or algorithmic specifications with SPEC-k identifiers",
+      "items": {
+        "type": "object",
+        "required": ["description", "grounding_evidence", "epistemic_status"],
+        "allOf": [
+          {
+            "anyOf": [
+              { "required": ["spec_id"] },
+              { "required": ["id"] }
+            ]
+          },
+          {
+            "anyOf": [
+              { "required": ["expression"] },
+              { "required": ["latex"] }
+            ]
+          }
+        ],
+        "properties": {
+          "spec_id": {
+            "type": "string",
+            "description": "Unique specification identifier, e.g., 'SPEC-1', 'SPEC-2', or 'Eq. (3.12)'"
+          },
+          "id": {
+            "type": "string",
+            "description": "Alias for spec_id, e.g., 'SPEC-1' or 'SPEC-2'"
+          },
+          "representation_format": {
+            "type": "string",
+            "enum": ["latex", "pseudocode", "state_transition", "bnf_grammar", "predicate_logic", "type_algebra", "text_formula"],
+            "default": "latex"
+          },
+          "expression": { "type": "string", "description": "Formal mathematical formula, grammar, or algorithmic expression" },
+          "latex": { "type": "string", "description": "LaTeX representation of mathematical formula (alias for expression)" },
+          "description": { "type": "string" },
+          "grounding_evidence": { "type": "string", "description": "Verbatim quote or excerpt proving this formula/rule is from the canonical source" },
+          "epistemic_status": {
+            "type": "string",
+            "enum": ["canonical", "derived", "assumption"],
+            "description": "'canonical' (peer-reviewed/standard source), 'derived' (deduced intermediate), or 'assumption' (requires human sign-off)"
+          }
+        }
+      }
+    },
+    "variables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbol", "domain", "description"],
+        "properties": {
+          "symbol": { "type": "string", "description": "Symbol or variable name" },
+          "domain": { "type": "string", "description": "e.g., 'Real', 'Complex', 'Matrix[n,n]', 'Positive Integer', 'Probability Space [0,1]', 'Byte Array'" },
+          "dimensions": { "type": "string", "description": "Tensor dimensions or physical units (e.g., 'm/s^2', '[batch, seq_len, d_model]')" },
+          "role": {
+            "type": "string",
+            "enum": ["input", "parameter", "output", "internal"],
+            "description": "Optional role annotation for deterministic Stage 2 equation-to-signature parity checking"
+          },
+          "unit": {
+            "type": "string",
+            "description": "Optional SI or dimensional unit tag, e.g. '[L]', '[T^-1]', 'm/s^2', or 'dimensionless'"
+          },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Preconditions, continuity assumptions, convergence criteria, conservation laws, or security invariants"
+    },
+    "verification_contract": {
+      "type": "object",
+      "required": ["equivalence_mode"],
+      "properties": {
+        "equivalence_mode": {
+          "type": "string",
+          "enum": ["approximate_tolerance", "exact_equality", "structural_isomorphism", "metamorphic_relation", "state_trace_equivalence"],
+          "default": "approximate_tolerance"
+        },
+        "precision": { "type": "string", "default": "float64" },
+        "rtol": { "type": "number", "description": "Relative tolerance for numeric verification" },
+        "atol": { "type": "number", "description": "Absolute tolerance for numeric verification" },
+        "domain_bounds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "invariants": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Mathematical, physical, or algorithmic invariants to verify"
+        }
+      }
+    },
+    "ambiguities": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Any notation ambiguities, unstated conventions, or OCR/text uncertainties"
+    }
+  }
+}

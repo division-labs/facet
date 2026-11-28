@@ -1,0 +1,39 @@
+name: Mosaic / Roadmap Deliverable
+description: Track an implementation deliverable from ROADMAP.md (Milestones 1-4)
+title: "[M1.x] "
+labels: ["kind/roadmap", "area/facet-lens"]
+body:
+  - type: dropdown
+    id: milestone_ref
+    attributes:
+      label: ROADMAP.md Milestone
+      options:
+        - "Milestone 1 — Port Contracts, Runtime Witnesses & Compound Port-Graph Model"
+        - "Milestone 2 — EmbeddingGemma 2 Clustering, 2D MDS & Community Convex Hulls"
+        - "Milestone 3 — 60fps ForceAtlas2 Mosaic Browser & Multi-Layer Expand/Collapse"
+        - "Milestone 4 — Multi-Mode Composer & mosaic_linked_specs Seam"
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Deliverable Specification
+      description: Concrete data structures, invariants, and primary-literature grounding from `ROADMAP.md`.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Target Modules & Coupled Contracts
+      placeholder: |
+        - `.github/extensions/facet-lens/ui.mjs`
+        - `.github/skills/formal-mapping/mapping_schema.json`
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Deterministic Verification Gate
+      description: Unit, fault-injection, or trajectory assertions to add to `scripts/validate_system.py`.
+    validations:
+      required: true

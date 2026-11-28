@@ -1,0 +1,73 @@
+name: Pipeline or Trace Defect
+description: Report a stage failure, OCR/contract defect, latency regression, or Cleanroom/UX leak backed by trace diagnostics
+title: "[Hardening] "
+labels: ["kind/trace-defect"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use `scripts/analyze_trace.py --session <id_or_events_jsonl> --audit-bundle <dir>` to trace symptoms back to the earliest originating pipeline stage (see [`docs/empirical-engineering.md`](https://github.com/division-labs/facet/blob/main/docs/empirical-engineering.md)).
+  - type: dropdown
+    id: root_stage
+    attributes:
+      label: Originating Stage / Component
+      description: Earliest stage where the underlying defect enters the pipeline (not merely where downstream symptoms appear)
+      options:
+        - "Stage 0V — Visual / PDF OCR (@Scribe & prepare_visual_sources.py)"
+        - "Stage 0 — Literature Discovery (@Researcher -> RESEARCH.md)"
+        - "Stage 1 — Specification Manifest & Critic (@Researcher / @Auditor -> manifest.json)"
+        - "Stage 2 — Formal Interface & Obligations (@Formalist -> mapping.json)"
+        - "Stage 3 — Implementation & Smoke Probes (@Engineer -> *.py)"
+        - "Stage 4 — Cleanroom Verification & Rewinds (@Auditor -> verify_*.py)"
+        - "Stage 5 — Archival & Cryptographic Provenance (PROVENANCE.json)"
+        - "Control Plane — @Facet Hypervisor / @Orchestrator / Hooks"
+        - "Facet Lens Canvas Extension (.github/extensions/facet-lens/)"
+    validations:
+      required: true
+  - type: dropdown
+    id: modality
+    attributes:
+      label: Input Modality
+      options:
+        - "Multi-Modality / General"
+        - "PDF Document"
+        - "Raster / SVG Image Scan"
+        - "Local Specification Bundle"
+        - "Open Web Ideation"
+        - "Closed-Book Text / SciCode"
+    validations:
+      required: true
+  - type: dropdown
+    id: diagnostic_bucket
+    attributes:
+      label: Primary Optimization / Integrity Bucket (analyze_trace.py)
+      options:
+        - "1_reasoning_bloat (<|thought|> bloat / >30s turns / output truncation)"
+        - "2_unhydrated_tool_tax (redundant view / solo update_todo / probing)"
+        - "3_schema_hook_and_permission_friction (denials / stop blocks / pytest collection)"
+        - "4_prompt_footprint_and_echo (context bloat / cross-layer echo)"
+        - "5_vram_residency_and_swaps (OLLAMA_MAX_LOADED_MODELS=1 model swaps)"
+        - "6_cleanroom_and_ux_integrity (Cleanroom leak / user-plane tag leak)"
+        - "Functional / Mathematical Correctness"
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Observed Behavior & Trace Evidence
+      description: Summarize what happened, citing `events.jsonl` line spans, `wire_capture.jsonl` sequence numbers, or `00_MASTER_AUDIT.md` metrics.
+      placeholder: |
+        - Run / Modality:
+        - Symptom:
+        - Root cause in trace:
+    validations:
+      required: true
+  - type: textarea
+    id: ab_plan
+    attributes:
+      label: Candidate General Fix & Rotating Scratch A/B Plan
+      description: Proposed structural fix (preferring deterministic hooks over prompt prose) and fresh rotating challenges for A/B verification.
+      placeholder: |
+        - Control (Arm A):
+        - Candidate (Arm B / C):
+        - Rotating challenges (fresh arXiv CC BY 4.0 PDF, SciCode step, multi-op spec):

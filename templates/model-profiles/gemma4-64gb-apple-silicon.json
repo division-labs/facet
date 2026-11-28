@@ -1,0 +1,25 @@
+{
+  "profile_name": "gemma4-64gb-apple-silicon",
+  "description": "Reference multi-tier model mapping for Mac Mini M5 Pro / Apple Silicon with 64GB Unified Memory",
+  "hardware_target": "Apple Silicon (M1/M2/M3/M4/M5) with >= 48GB Unified Memory",
+  "ollama_concurrency_setting": "OLLAMA_MAX_LOADED_MODELS=1",
+  "models": {
+    "Facet": "ollama-models/gemma4:e4b",
+    "Orchestrator": "ollama-models/gemma4:e4b",
+    "Researcher": "ollama-models/gemma4:26b-a4b-it-q8_0",
+    "Scribe": "ollama-models/gemma4:e4b",
+    "Formalist": "ollama-models/gemma4:26b-a4b-it-q8_0",
+    "Engineer": "ollama-models/gemma4:26b-a4b-it-q8_0",
+    "Auditor": "ollama-models/gemma4:26b-a4b-it-q8_0"
+  },
+  "decision_model": {
+    "model": "pplx-decider-flash",
+    "keep_alive": 0,
+    "confidence_threshold": 0.85
+  },
+  "rationale": {
+    "Researcher_Formalist_Engineer_Auditor": "Unified 26B-A4B MoE model (3.8B active / 25.2B total, GGUF llama-server, ~27.6 GB wired with OLLAMA_KV_CACHE_TYPE=q8_0 + OLLAMA_FLASH_ATTENTION=1) powers all four text specialists (@Researcher, @Formalist, @Engineer, @Auditor) at ~52-55 tok/s with zero specialist stage-swap eviction or representation drift.",
+    "Facet_Orchestrator_Scribe": "E4B pairs 4.5B effective PLE parameters with a dedicated ~150M Vision Encoder at T=0.1, top_p=0.95, top_k=64 for transient read-only hypervisor seal gating (@Facet), sub-second task routing (@Orchestrator), and upstream Stage 0V PDF/diagram OCR (@Scribe) with zero VRAM swap across all three roles.",
+    "SystemOneDecider": "Boundary-only System-1 decision model (pplx-decider-flash, 4B multimodal Vision+Text, 256K ctx, keep_alive=0 under strict OLLAMA_MAX_LOADED_MODELS=1) executes <1 s zero-output-token semantic spec checks, Stage 4 diagnosis-vs-label overrides, and Method L3 AST/JSON hunk mass-pooling edit-scope localization while leaving 0 B in VRAM."
+  }
+}

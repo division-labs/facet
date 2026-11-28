@@ -1,0 +1,30 @@
+name: Empirical A/B Experiment
+description: Propose and log a zero-repo-mutation multi-modality scratch experiment battery
+title: "[Experiment] "
+labels: ["kind/experiment", "status/needs-ab-probe"]
+body:
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Architectural Hypothesis
+      description: What general pipeline/hook mechanism is being tested and which failure class does it address?
+    validations:
+      required: true
+  - type: textarea
+    id: matrix
+    attributes:
+      label: Experimental Arms & Rotating Disjoint Challenges
+      description: List Control vs. Candidate arms and the fresh rotating challenges (never reuse held-out certification inputs or stale scratch fixtures).
+      placeholder: |
+        - Arms: Arm A (Control) vs. Arm B vs. Arm C
+        - Rotating Challenges:
+          1. Fresh CC BY 4.0 arXiv PDF:
+          2. Fresh SciCode problem:
+          3. Multi-entrypoint synthetic spec:
+    validations:
+      required: true
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Activation Counters, Scorecard & Interaction Results
+      description: Record hook activation counts, pass rates, GPU seconds, and pairwise interaction terms (`analyze_trace.py --factorial-json`).

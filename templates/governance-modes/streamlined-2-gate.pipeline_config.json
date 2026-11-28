@@ -1,0 +1,20 @@
+{
+  "$schema": "../skills/spec-pipeline/pipeline_config.schema.json",
+  "governance_mode": "streamlined-2-gate",
+  "description": "Streamlined governance: auto-advances ideation and mapping; pauses for human review only at C1 (Specification Manifest) and C3 (Final Verification)",
+  "max_repair_attempts": 3,
+  "toolchain": {
+    "verification_globs": ["verify_*.py", "test_*.py", "LOCAL_CRITIC.json", "AUDIT_FEEDBACK.json", "VERIFICATION.md"],
+    "static_validator": "py_compile"
+  },
+  "scratch_retention": "consume-once",
+  "experiments": {
+    "source_ingress_mode": "dual_tier_explicit_promotion",
+    "coordinator_residency": "e4b_orchestrator",
+    "sys1_trigger_policy": "ast_risk_gated",
+    "context_hydration": "s2_s3_selective_hydration",
+    "rewind_dag_policy": "linear_stage_cascade",
+    "contract_and_gates": "standard",
+    "auditor_cleanroom_policy": "two_phase_post_pytest"
+  }
+}

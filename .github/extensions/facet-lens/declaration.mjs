@@ -1,0 +1,91 @@
+/**
+ * @fileoverview Shared declarative metadata for the `facet-pipeline-lens` Copilot Canvas.
+ *
+ * Imported by `extension.mjs` and mirrored byte-for-byte in `extension.json` (version 1,
+ * `"initialization": "module"`) so VS Code 1.147.0+ can advertise `Facet Lens` dormantly
+ * before launching a Node.js extension host process with zero schema drift.
+ *
+ * Function Map:
+ *   - Section 1: Copilot Canvas Manifest & Action Input Schemas (`FACET_LENS_DECLARATION`)
+ */
+
+import { CANVAS_ID } from "./state.mjs";
+
+// ============================================================================
+// Section 1: Copilot Canvas Manifest & Action Input Schemas
+// Coupled contract: .github/extensions/facet-lens/extension.json & extension.mjs
+// `FACET_LENS_DECLARATION` must match `extension.json` (`contributes.canvases[0]`) byte-for-byte (verified in scripts/validate_system.py).
+// ============================================================================
+
+export const FACET_LENS_DECLARATION = {
+    id: CANVAS_ID,
+    displayName: "Facet Lens",
+    description: "Inspect live Facet equations, typed Python interfaces, 4-predicate cleanroom proofs, and Merkle provenance seals.",
+    icon: "./assets/facet-prism.png",
+    inputSchema: {
+        type: "object",
+        properties: {
+            workspaceRoot: {
+                type: "string",
+                description: "Optional absolute workspace path (or live symlink path) for Facet Lens to monitor.",
+            },
+            workspacePath: {
+                type: "string",
+                description: "Optional alias for workspaceRoot.",
+            },
+        },
+        additionalProperties: false,
+    },
+    actions: [
+        {
+            name: "inspect_lens_state",
+            description: "Read the current Facet pipeline stage, active specification, proof summary, and Merkle seal verification status.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    workspaceRoot: {
+                        type: "string",
+                        description: "Optional absolute workspace path to inspect.",
+                    },
+                    workspacePath: {
+                        type: "string",
+                        description: "Optional alias for workspaceRoot.",
+                    },
+                },
+                additionalProperties: false,
+            },
+        },
+        {
+            name: "focus_lens_view",
+            description: "Switch the active Facet Lens tab, color theme, or focused archived specification package.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    view: {
+                        type: "string",
+                        enum: ["traceability", "source-math", "proofs", "code", "specs"],
+                        description: "Target view tab to focus in Facet Lens.",
+                    },
+                    specSlug: {
+                        type: "string",
+                        description: "Optional archived specs/<slug>/ package to load.",
+                    },
+                    theme: {
+                        type: "string",
+                        enum: ["dark", "light"],
+                        description: "Optional color theme ('dark' or 'light').",
+                    },
+                    workspaceRoot: {
+                        type: "string",
+                        description: "Optional absolute workspace path.",
+                    },
+                    workspacePath: {
+                        type: "string",
+                        description: "Optional alias for workspaceRoot.",
+                    },
+                },
+                additionalProperties: false,
+            },
+        },
+    ],
+};

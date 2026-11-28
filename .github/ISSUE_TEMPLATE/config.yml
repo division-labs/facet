@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Empirical Engineering & Trace Diagnostics Guide
+    url: https://github.com/division-labs/facet/blob/main/docs/empirical-engineering.md
+    about: How to diagnose 1:1 session traces and validate fixes with rotating multi-modality scratch batteries
+  - name: Mosaic Compositional Workbench Roadmap
+    url: https://github.com/division-labs/facet/blob/main/ROADMAP.md
+    about: Architectural baseline and Milestones 1-4 for Facet Lens Mosaic

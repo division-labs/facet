@@ -1,0 +1,187 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PipelineConfig",
+  "type": "object",
+  "properties": {
+    "governance_mode": {
+      "type": "string",
+      "enum": ["strict-4-gate", "streamlined-2-gate", "autonomous-batch"],
+      "default": "strict-4-gate",
+      "description": "Checkpoint gatekeeper governance level: strict-4-gate (C0, C1, C2, C3), streamlined-2-gate (C1, C3), or autonomous-batch"
+    },
+    "max_repair_attempts": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "default": 3,
+      "description": "Maximum Reflexion repair iterations between @Engineer and @Auditor before human checkpoint escalation"
+    },
+    "toolchain": {
+      "type": "object",
+      "description": "Python verification test discovery and static validation configuration",
+      "properties": {
+        "verification_globs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["verify_*.py", "test_*.py", "LOCAL_CRITIC.json", "AUDIT_FEEDBACK.json", "VERIFICATION.md"]
+        },
+        "static_validator": {
+          "type": "string",
+          "enum": ["py_compile", "none"],
+          "default": "py_compile"
+        }
+      }
+    },
+    "scratch_retention": {
+      "type": "string",
+      "enum": ["consume-once", "archive-trace"],
+      "default": "consume-once",
+      "description": "Lifecycle of .pipeline_scratch/ transient staging: consume-once cleans rollback/OCR staging immediately; archive-trace additionally persists per-agent reasoning traces (*_trace.md) into specs/<slug>/scratch_traces/"
+    },
+    "max_visual_pages": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200,
+      "default": 32,
+      "description": "Visual plate warning cap for PDF sources (default 32 based on gemma4:e4b 37% context pre-knee; 0 renders all pages without cap; PDFs exceeding cap stage 32 salience-ranked plates with a warning while SOURCE_TEXT.md preserves all 1..N embedded text pages verbatim)"
+    },
+    "approved_research_domains": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Additional workspace-approved domains auto-authorized for web_fetch research alongside approved_sources.json"
+    },
+    "allow_web_research": {
+      "type": "boolean",
+      "default": true,
+      "description": "When false, disables web_fetch so @Researcher extracts equations, constraints, and target_interface strictly from the user prompt, SOURCE_OCR.md, and research/ files (closed-book / benchmark mode)"
+    },
+    "enable_local_spec_critic": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["s1_only", "system1_s1_s2", "off", "s2_only", "s1_and_s2"]
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "default": "s1_only",
+      "description": "Local semantic and executable specification screening mode after manifest.json and mapping.json: 's1_only' (default, 1-pass source-gated Stage 1 executable toy-vector @Auditor audit before Checkpoint 1 seal), 'system1_s1_s2' (<1 s boundary pplx-decider-flash screen with automatic 'off' fallback), 'off' (AST-1..4 + Stage 4 Cleanroom @Auditor only), 's2_only', or 's1_and_s2' (boolean true maps to 's1_and_s2', false maps to 'off')"
+    },
+    "decision_model": {
+      "type": "object",
+      "description": "Boundary-only System-1 decision model (/v1/systemone, keep_alive=0 under OLLAMA_MAX_LOADED_MODELS=1) for semantic spec screening, Stage 4 rewind triage override, and Method L3 edit line-scope localization",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "model": {
+          "type": "string",
+          "default": "pplx-decider-flash"
+        },
+        "confidence_threshold": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 0.99,
+          "default": 0.85
+        },
+        "keep_alive": {
+          "oneOf": [{ "type": "integer" }, { "type": "string" }],
+          "default": 0
+        },
+        "timeout_sec": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 60,
+          "default": 15
+        }
+      }
+    },
+    "enable_post_archive_embed": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, Stage 5 archival triggers templates/extensions/post_archive_embed.py (or post_archive_embed.py) out-of-band to index archived artifacts via Ollama /api/embed"
+    },
+    "upstream_seals": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Optional workspace-relative paths to upstream PROVENANCE.json cryptographic seal files (e.g. specs/<upstream_slug>/PROVENANCE.json) that @Facet and hypervisor-guard must verify before launching @Orchestrator"
+    },
+    "experiments": {
+      "type": "object",
+      "description": "Configurable runtime policy controls for source ingress, coordinator residency, System-1 trigger gating, Cleanroom context hydration, rewind invalidation, and Stage 4 Cleanroom read confinement",
+      "properties": {
+        "source_ingress_mode": {
+          "type": "string",
+          "enum": ["strict_research_clobber", "strict_research_aligned", "dual_tier_explicit_promotion"],
+          "default": "dual_tier_explicit_promotion",
+          "description": "Source ingress policy — dual_tier_explicit_promotion (default: research/ stays the sole auto-scanned folder while explicitly user-named workspace files/folders and Chat attachments promote automatically) vs strict_research_aligned (research/-only)"
+        },
+        "coordinator_residency": {
+          "type": "string",
+          "enum": ["e4b_orchestrator", "e4b_slim_context", "unified_26b_s1_s4"],
+          "default": "e4b_orchestrator",
+          "description": "Coordinator model residency policy across S1->S4"
+        },
+        "sys1_trigger_policy": {
+          "type": "string",
+          "enum": ["every_boundary", "rewind_and_s0v_only", "ast_risk_gated"],
+          "default": "ast_risk_gated",
+          "description": "Boundary System-1 (pplx-decider-flash) invocation trigger policy (default ast_risk_gated skips 3rd-model loads on clean specs)"
+        },
+        "context_hydration": {
+          "type": "string",
+          "enum": ["metadata_only", "inline_compact_specs", "epistemic_working_set", "s2_s3_selective_hydration"],
+          "default": "s2_s3_selective_hydration",
+          "description": "Upstream contract hydration mode injected in subagentStart (default s2_s3_selective_hydration hydrates S2/S3 specs + S4 signature stub only)"
+        },
+        "rewind_dag_policy": {
+          "type": "string",
+          "enum": ["linear_stage_cascade", "interface_hash_skip_s3", "slice_dependency_dag"],
+          "default": "linear_stage_cascade",
+          "description": "Rewind stage-invalidation policy after MAPPING_DEFECT / MANIFEST_DEFECT repairs"
+        },
+        "contract_and_gates": {
+          "type": "string",
+          "enum": ["standard", "debiased_contract_ocr_gate", "axiomatic_split_and_loop_guard"],
+          "default": "standard",
+          "description": "Caller contract framing, C1 assumption gate scope, and idempotent read-loop guard mode"
+        },
+        "auditor_cleanroom_policy": {
+          "type": "string",
+          "enum": ["unrestricted_read", "two_phase_post_pytest", "strict_blackbox"],
+          "default": "two_phase_post_pytest",
+          "description": "Stage 4 @Auditor Cleanroom implementation-read confinement policy (default two_phase_post_pytest locks pre-pytest reads and unlocks after pytest failure)"
+        },
+        "engineer_hydration_mode": {
+          "type": "string",
+          "enum": ["dual_json", "unified_build_sheet", "typed_python_skeleton", "entrypoint_cards", "progressive_scaffold_fill"],
+          "default": "unified_build_sheet",
+          "description": "Stage 3 @Engineer lossless specification hydration representation (default unified_build_sheet joins manifest.json and Cleanroom-redacted mapping.json into a single deduplicated build sheet)"
+        },
+        "engineer_repair_mode": {
+          "type": "string",
+          "enum": ["pointer_full_view", "ast_fault_cone", "ast_fault_cone_replace_symbol"],
+          "default": "pointer_full_view",
+          "description": "Stage 3 @Engineer warm repair code-context policy (default pointer_full_view pairs <workspace_map> AST [Lstart..Lend] symbol spans and <20 KB view_range chunks with full sibling visibility)"
+        },
+        "engineer_escalation_mode": {
+          "type": "string",
+          "enum": ["in_window_retry", "handoff_and_contract_escalation"],
+          "default": "handoff_and_contract_escalation",
+          "description": "Stage 3 @Engineer output-truncation compaction handoff and MAPPING_DEFECT Stage 2 contract escalation policy"
+        },
+        "stage_checklist_mode": {
+          "type": "string",
+          "enum": ["hook_subagent_start", "off"],
+          "default": "hook_subagent_start",
+          "description": "Zero-tool-call deterministic <stage_checklist> injection in subagentStart across @Orchestrator, @Engineer, and Stage 4 @Auditor (default hook_subagent_start; off disables checklist injection)"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

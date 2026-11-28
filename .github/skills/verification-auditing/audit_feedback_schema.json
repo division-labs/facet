@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AuditFeedback",
+  "type": "object",
+  "required": [
+    "failures"
+  ],
+  "anyOf": [
+    { "required": ["overall_status"] },
+    { "required": ["status"] }
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "description": "ISO 8601 timestamp of the audit run"
+    },
+    "concept_slug": {
+      "type": "string",
+      "description": "Canonical identifier for the active concept"
+    },
+    "attempt_number": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Sequential repair iteration counter (bounded by max_repair_attempts)"
+    },
+    "overall_status": {
+      "type": "string",
+      "enum": ["FAILED", "FAIL", "CONDITIONAL_PASS", "SUCCESS", "PASS"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["FAILED", "FAIL", "CONDITIONAL_PASS", "SUCCESS", "PASS"],
+      "description": "Alias for overall_status"
+    },
+    "rewind_target": {
+      "type": "string",
+      "enum": ["STAGE_3_IMPLEMENTATION", "STAGE_2_MAPPING", "STAGE_1_SPECIFICATION", "STAGE_4_VERIFICATION"],
+      "description": "Optional explicit pipeline rewind stage when failures originate in mapping.json (STAGE_2_MAPPING), manifest.json (STAGE_1_SPECIFICATION), or verify_*.py (STAGE_4_VERIFICATION)"
+    },
+    "failure_classification": {
+      "type": "string",
+      "enum": [
+        "IMPLEMENTATION_DEFECT",
+        "MAPPING_DEFECT",
+        "MANIFEST_DEFECT",
+        "TEST_HARNESS_DEFECT",
+        "DOMAIN_BOUND_LIMITATION",
+        "SPECIFICATION_AMBIGUITY"
+      ],
+      "description": "Optional top-level root-cause classification propagated automatically to failures[*] items that omit an item-level classification (accepted aliases: defect_classification, defect_type, defect_category, classification)"
+    },
+    "location": {
+      "type": "string",
+      "description": "Optional artifact filename where the defect originates (e.g. 'mapping.json', 'manifest.json', 'verify_<slug>.py')"
+    },
+    "tolerances_tested": {
+      "type": "object",
+      "properties": {
+        "rtol": { "type": "number" },
+        "atol": { "type": "number" },
+        "total_samples": { "type": "integer" }
+      }
+    },
+    "failures": {
+      "type": "array",
+      "description": "Structured counter-examples and failed verification obligations",
+      "items": {
+        "type": "object",
+        "required": [
+          "obligation_id",
+          "failure_classification",
+          "diagnosis"
+        ],
+        "properties": {
+          "obligation_id": {
+            "type": "string",
+            "description": "Identifier of the failed verification obligation (e.g. 'OBL-1')"
+          },
+          "spec_id": {
+            "type": "string",
+            "description": "Traceable link to specification claim (e.g. 'SPEC-1')"
+          },
+          "failure_classification": {
+            "type": "string",
+            "enum": [
+              "IMPLEMENTATION_DEFECT",
+              "MAPPING_DEFECT",
+              "MANIFEST_DEFECT",
+              "TEST_HARNESS_DEFECT",
+              "DOMAIN_BOUND_LIMITATION",
+              "SPECIFICATION_AMBIGUITY"
+            ],
+            "description": "Actionable root-cause categorization: IMPLEMENTATION_DEFECT routes to @Engineer (Stage 3); MAPPING_DEFECT / SPECIFICATION_AMBIGUITY rewinds to @Formalist (Stage 2); MANIFEST_DEFECT rewinds to @Researcher (Stage 1)"
+          },
+          "defect_type": {
+            "type": "string",
+            "description": "Accepted alias normalized to failure_classification on save"
+          },
+          "defect_category": {
+            "type": "string",
+            "description": "Accepted alias normalized to failure_classification on save"
+          },
+          "minimal_counterexample": {
+            "description": "Minimal input values triggering the discrepancy or assertion failure"
+          },
+          "expected_oracle": {
+            "description": "Ground-truth value, expression, or invariant requirement from oracle"
+          },
+          "actual_observed": {
+            "description": "Observed output or exception from the implementation under test"
+          },
+          "violated_invariant": {
+            "type": "string",
+            "description": "Mathematical, physical, or logical invariant violated"
+          },
+          "diagnosis": {
+            "type": "string",
+            "description": "Concrete technical explanation and suggested repair path for @Engineer"
+          }
+        }
+      }
+    },
+    "historical_attempts": {
+      "type": "array",
+      "description": "Append-only ledger of prior repair attempts in this run to prevent oscillation",
+      "items": {
+        "type": "object",
+        "properties": {
+          "attempt_number": { "type": "integer" },
+          "failure_count": { "type": "integer" },
+          "summary": { "type": "string" }
+        }
+      }
+    }
+  }
+}

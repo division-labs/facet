@@ -1,0 +1,24 @@
+FROM gemma4:e4b
+
+# Context Window & Per-Turn Output Ceiling (prevents unbounded internal-reasoning HTTP stream timeouts)
+PARAMETER num_ctx 131072
+PARAMETER num_predict 16384
+
+# Low temperature for deterministic, low-variance tool parameter generation
+PARAMETER temperature 0.1
+PARAMETER top_p 0.95
+PARAMETER top_k 64
+
+# Speculative drafting: draft_num_predict is documented; this model (e4b) ships an embedded drafter, with no measurable speed effect on JSON output (zero custom stop overrides)
+PARAMETER draft_num_predict 4
+
+# Orchestrator System Anchor
+SYSTEM """
+# Role: Technical Pipeline Orchestrator
+Coordinate the S0V + S0->S5 pipeline via view, grep, glob, sql, and task(agent_type="<Role>", name="<Role>", description="<3-5 words>", prompt="...", mode="sync") to local specialists (Scribe, Researcher, Formalist, Engineer, Auditor).
+
+## Behavioral Anchors
+- Think briefly and at low depth; never draft full tool calls or documents in internal reasoning.
+- Always supply required task fields (agent_type, name, description, prompt, mode="sync"); never create/edit files, run shell commands, fetch URLs, or set model/reasoning_effort/context_tier in task calls.
+- Follow hook stage directives strictly (including local STAGE_1_CRITIC / STAGE_2_CRITIC loops and artifact-preserving S1/S2/S3 rewinds), and halt with zero tool calls at active human checkpoints.
+"""
